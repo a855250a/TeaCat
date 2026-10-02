@@ -9,6 +9,7 @@ import com.teacat.entity.User;
 import com.teacat.repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import com.teacat.repository.PetRepository;
 import com.teacat.repository.HealthRecordRepository;
 import com.teacat.entity.Pet;
@@ -101,6 +102,7 @@ public class UserService {
         // =========================
         // 訪客一鍵登入
         // =========================
+        @Transactional
         public LoginResponse guestLogin() {
 
                 User guest = userRepository.findByEmail(
@@ -120,19 +122,40 @@ public class UserService {
                         guest = userRepository.save(guest);
                 }
 
-                // Demo 帳號第一次登入時建立可展示資料
-                seedGuestData(guest);
+                // 每次訪客登入都重建固定 Demo 資料，避免前一位訪客的修改/刪除
+                // 影響下一位作品集瀏覽者。
+                resetGuestData(guest);
 
                 // 每次訪客登入都產生新的 JWT
                 return createLoginResponse(guest);
         }
 
 
-        private void seedGuestData(User guest) {
-                if (!petRepository.findByUserId(guest.getId()).isEmpty()) return;
-                Pet pet = new Pet(); pet.name="茶茶"; pet.age=3; pet.weight=4.3; pet.vaccine="三合一疫苗"; pet.setUser(guest); pet=petRepository.save(pet);
-                HealthRecord r1=new HealthRecord(); r1.setPet(pet);r1.setUser(guest);r1.setRecordDate(LocalDate.now().minusDays(20));r1.setType("VACCINE");r1.setTitle("年度疫苗");r1.setNotes("完成例行疫苗紀錄");healthRecordRepository.save(r1);
-                HealthRecord r2=new HealthRecord(); r2.setPet(pet);r2.setUser(guest);r2.setRecordDate(LocalDate.now().minusDays(7));r2.setType("WEIGHT");r2.setTitle("體重紀錄");r2.setWeight(4.3);r2.setNotes("精神與食慾正常");healthRecordRepository.save(r2);
+        private void resetGuestData(User guest) {
+                healthRecordRepository.deleteByUserId(guest.getId());
+                petRepository.deleteByUserId(guest.getId());
+
+                Pet pet = new Pet();
+                pet.name = "茶茶";
+                pet.age = 3;
+                pet.weight = 4.3;
+                pet.vaccine = "三合一疫苗";
+                pet.setUser(guest);
+                pet = petRepository.save(pet);
+
+                HealthRecord r1 = new HealthRecord();
+                r1.setPet(pet); r1.setUser(guest);
+                r1.setRecordDate(LocalDate.now().minusDays(20));
+                r1.setType("VACCINE"); r1.setTitle("年度疫苗");
+                r1.setNotes("完成例行疫苗紀錄");
+                healthRecordRepository.save(r1);
+
+                HealthRecord r2 = new HealthRecord();
+                r2.setPet(pet); r2.setUser(guest);
+                r2.setRecordDate(LocalDate.now().minusDays(7));
+                r2.setType("WEIGHT"); r2.setTitle("體重紀錄");
+                r2.setWeight(4.3); r2.setNotes("精神與食慾正常");
+                healthRecordRepository.save(r2);
         }
 
         // =========================

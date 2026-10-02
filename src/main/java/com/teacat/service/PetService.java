@@ -2,8 +2,9 @@ package com.teacat.service;
 
 
 import com.teacat.repository.PetRepository;
-import com.teacat.repository.UserRepository;
+import com.teacat.repository.HealthRecordRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import com.teacat.entity.Pet;
 
 import java.util.ArrayList;
@@ -16,20 +17,19 @@ import com.teacat.exception.InvalidSearchConditionException;
 import com.teacat.entity.User;
 import com.teacat.exception.ForbiddenException;
 
-import com.teacat.config.JwtUtil;
 
 
 @Service
 public class PetService {
     private final PetRepository petRepository;
-    private final UserRepository userRepository;
+    private final HealthRecordRepository healthRecordRepository;
 
     public PetService(
             PetRepository petRepository,
-            UserRepository userRepository
+            HealthRecordRepository healthRecordRepository
     ) {
         this.petRepository = petRepository;
-        this.userRepository = userRepository;
+        this.healthRecordRepository = healthRecordRepository;
     }
     // 取得所有寵物資料
     public List<PetResponse> getAllPets(Long userId) {
@@ -78,6 +78,7 @@ public class PetService {
         return response;
     }
     // 根據 ID 刪除寵物資料
+    @Transactional
     public void deletePet(
             Long id,
             Long userId
@@ -95,6 +96,8 @@ public class PetService {
             throw new ForbiddenException("無權限刪除此寵物");
         }
 
+        // 先刪除子健康紀錄，避免資料庫外鍵阻止刪除寵物。
+        healthRecordRepository.deleteByPetId(id);
         petRepository.delete(pet);
     }
     // 根據 ID 更新寵物資料
@@ -119,7 +122,10 @@ public class PetService {
         pet.age = petRequest.getAge();
         pet.weight = petRequest.getWeight();
         pet.vaccine = petRequest.getVaccine();
-        pet.photo = petRequest.getPhoto();
+        // 編輯時沒有重新上傳照片，就保留既有照片。
+        if (petRequest.getPhoto() != null && !petRequest.getPhoto().isBlank()) {
+            pet.photo = petRequest.getPhoto();
+        }
 
         Pet savedPet = petRepository.save(pet);
         PetResponse response = new PetResponse();
