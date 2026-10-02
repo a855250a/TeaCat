@@ -8,11 +8,11 @@
         <version>3.5.14</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.pethealthcloud</groupId>
-    <artifactId>pethealthcloud</artifactId>
+    <groupId>com.teacat</groupId>
+    <artifactId>teacat</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>PetHealthCloudBackend2</name>
-    <description>PetHealthCloudBackend2</description>
+    <name>TeaCat</name>
+    <description>TeaCat</description>
     <url/>
     <licenses>
         <license/>
@@ -90,6 +90,13 @@
             <artifactId>jjwt-jackson</artifactId>
             <version>0.12.7</version>
             <scope>runtime</scope>
+        </dependency>
+
+        <!-- Permanent image storage for portfolio deployment -->
+        <dependency>
+            <groupId>com.cloudinary</groupId>
+            <artifactId>cloudinary-http44</artifactId>
+            <version>1.39.0</version>
         </dependency>
 
     </dependencies>

@@ -7,7 +7,7 @@
 
     <title>TeaCat｜寵物健康管理</title>
 
-    <link rel="stylesheet" href="style.css?v=0.7.1">
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
@@ -250,7 +250,7 @@
         </div>
 
 
-        <div class="empty-state">
+        <div id="recentRecordList" class="empty-state">
 
             <p>
                 目前尚無健康紀錄
@@ -290,15 +290,15 @@
             </div>
 
 
-            <button type="button" disabled>
-                上傳醫療報告
+            <button type="button" onclick="window.location.href='/ai.html'">
+                開啟 TeaCat AI
             </button>
 
         </div>
 
 
         <small>
-            AI 分析功能開發中
+            作品集 Demo：可貼上醫療報告文字，整理常見檢驗關鍵字與摘要。
         </small>
 
     </section>

@@ -1,167 +1,130 @@
-# 🐾 PetHealthCloud
+# 🐾 TeaCat
 
-PetHealthCloud 是我目前持續開發中的個人專案。
+TeaCat 是一個以 **Java Spring Boot + MySQL** 建立的寵物健康管理作品集，目標是把寵物基本資料、健康時間軸與醫療報告整理集中在同一個平台。
 
-我希望它不是一個上課練習，而是一個可以真正持續開發、持續改善的產品，同時也是我轉職 Java Backend 工程師的重要作品集。
+## 目前功能
 
-目前專案以 **Java Spring Boot** 開發，主要功能是讓使用者管理自己的寵物資料，並透過 JWT 做登入驗證與權限管理。
+- 一般帳號登入 / 註冊、BCrypt 密碼雜湊
+- JWT 驗證與登入逾期處理
+- 一鍵訪客體驗登入（首次登入自動建立 TeaCat Demo 資料）
+- 寵物 CRUD、照片上傳（JPG / PNG / WEBP）、使用者資料隔離
+- 健康紀錄 CRUD：看診、疫苗、檢驗、體重、其他
+- Dashboard 寵物資訊與健康紀錄統計
+- TeaCat AI Demo：醫療報告文字重點整理與常見檢驗關鍵字辨識
+- Swagger / OpenAPI
+- Responsive Web UI（桌面與手機）
 
-未來會持續加入更多功能，例如醫療紀錄、疫苗提醒、OCR、AI 分析以及手機 App。
+> TeaCat AI 目前是作品集示範版的文字整理器，不做醫療診斷，也尚未串接外部 LLM。下一階段規劃以 Python OCR + LLM service 處理圖片報告與結構化摘要。
 
----
+## 技術
 
-# 為什麼做這個專案？
+**Backend:** Java 21, Spring Boot, Spring Data JPA, Hibernate, Bean Validation  
+**Database:** MySQL 8  
+**Security:** JWT, BCrypt  
+**Frontend:** HTML, CSS, Vanilla JavaScript  
+**Tools:** Maven, Swagger/OpenAPI, Git, Docker
 
-因為我自己很喜歡貓，也發現許多飼主會把寵物的健康資訊分散在不同地方，例如：
+## 本機啟動
 
-- 疫苗紀錄
-- 體重變化
-- 健康檢查報告
-- 看診紀錄
+建立 MySQL database `teacat`，並在環境變數設定資料庫密碼：
 
-因此我希望打造一個可以集中管理寵物健康資訊的平台。
-
-目前先完成後端核心功能，之後會一步一步把它發展成真正可以使用的產品。
-
----
-
-# 目前完成
-
-✔ 使用者註冊
-
-✔ 使用者登入
-
-✔ BCrypt 密碼加密
-
-✔ JWT Token 驗證
-
-✔ 寵物 CRUD API
-
-✔ 動態搜尋 API
-
-✔ User 與 Pet 關聯
-
-✔ 使用者只能管理自己的寵物
-
-✔ Global Exception Handler
-
-✔ Swagger API 文件
-
----
-
-# 使用技術
-
-### Backend
-
-- Java 21
-- Spring Boot
-- Spring Data JPA
-- Hibernate
-
-### Database
-
-- MySQL
-
-### Security
-
-- JWT
-- BCrypt
-
-### Tools
-
-- Maven
-- Swagger
-- Git
-- GitHub
-
----
-
-# 專案架構
-
-```
-Controller
-        │
-        ▼
-Service
-        │
-        ▼
-Repository
-        │
-        ▼
-MySQL
+Windows PowerShell:
+```powershell
+$env:DB_PASSWORD="你的本機 MySQL 密碼"
+.\mvnw.cmd spring-boot:run
 ```
 
-目前採用 Spring Boot 常見的三層式架構，讓程式更容易維護與擴充。
+可選擇另外設定 JWT secret：
+```powershell
+$env:JWT_SECRET="請使用足夠長度的隨機字串"
+```
 
----
+啟動後開啟 `http://localhost:8080/login.html`。
 
-# API
+## 主要 API
 
-### User
+- `POST /register`, `POST /login`, `POST /guest-login`
+- `GET/POST /pets`, `GET/PUT/DELETE /pets/{id}`, `GET /pets/search`（登入者資料範圍）
+- `GET/POST /records`, `PUT/DELETE /records/{id}`
+- `POST /upload`
+- `POST /ai/analyze`
 
-- POST /register
-- POST /login
+## 架構
 
-### Pet
+`Browser UI → Spring MVC Controller → Service → Spring Data JPA → MySQL`
 
-- GET /pets
-- GET /pets/{id}
-- POST /pets
-- PUT /pets/{id}
-- DELETE /pets/{id}
-- GET /pets/search
+AI 擴充方向：`Spring Boot → Python OCR/AI Service → structured result → Health Record`
 
----
+## Demo 重點
 
-# 目前產品版本
+HR / 面試官可直接使用「訪客體驗登入」，不需要建立帳號。Demo 帳號第一次登入會自動建立寵物「茶茶」與健康紀錄，方便快速展示 Dashboard、Pet CRUD 與健康時間軸。
 
-## v0.1.2
+## 作者
 
-已完成：
+**啟華 蔡** — Software / Backend Developer Portfolio
 
-- CRUD API
-- MySQL
-- Spring Data JPA
-- Validation
-- Swagger
-- JWT Authentication
-- Authorization
-- Global Exception Handler
 
----
+## v1.0 Portfolio Release
 
-# 接下來的規劃
+- Pet / Health Record API 均以 JWT 登入者做資料隔離。
+- 寵物搜尋限制於目前登入者，避免跨帳號資料洩漏。
+- 圖片上傳限制為 JPG / PNG / WEBP，最大 10 MB。
+- AI 功能明確標示為 Demo 文字整理器，不宣稱醫療診斷或已串接 LLM。
 
-接下來預計依序完成：
+### 部署提醒
 
-- 簡單 Web Demo（方便展示）
-- Medical Record
-- Vaccination Record
-- 圖片上傳
-- OCR 醫療報告辨識
-- AI 健康分析
-- Android / iOS App
+正式環境請務必設定 `DB_URL`、`DB_USERNAME`、`DB_PASSWORD` 與足夠長度的 `JWT_SECRET`。`uploads/` 為本機檔案儲存；若部署平台使用 ephemeral filesystem，正式產品應改用物件儲存服務。
 
----
+## TeaCat v1.0 deployment
 
-# 學習目標
+Required environment variables:
 
-這個專案除了作品集之外，也是我學習軟體工程的重要紀錄。
+- `DB_PASSWORD` — database password (required)
+- `DB_URL` — JDBC URL; defaults locally to `jdbc:mysql://localhost:3306/teacat`
+- `DB_USERNAME` — defaults locally to `root`
+- `JWT_SECRET` — set a long random secret in production (do not commit it)
+- `PORT` — optional locally; cloud platforms can inject it automatically
 
-希望透過持續開發，逐步學習：
+Local Windows start:
 
-- RESTful API 設計
-- Spring Boot
-- 資料庫設計
-- 軟體架構
-- Git 版本控制
-- Docker
-- AWS 雲端部署
+```bat
+set DB_PASSWORD=YOUR_MYSQL_PASSWORD
+mvnw.cmd spring-boot:run
+```
 
----
+Then open `http://localhost:8080/login.html`.
 
-# 作者
+### Image storage note
+Pet images are currently stored under the application's local `uploads/` directory. This works locally. On an ephemeral cloud filesystem (including a default Render web service), uploaded images can be lost after a restart/redeploy. For persistent production image storage, attach persistent storage or replace this with an object-storage provider.
 
-**啟華 蔡**
+## TeaCat v1.0 Portfolio deployment
 
-Backend Developer Portfolio
+This release is designed to run as an independent public portfolio demo.
+
+### Required environment variables
+- `DB_URL` — cloud MySQL JDBC URL, e.g. `jdbc:mysql://host:3306/teacat?useSSL=true&serverTimezone=Asia/Taipei`
+- `DB_USERNAME`
+- `DB_PASSWORD`
+- `JWT_SECRET` — use a long random value (32+ bytes)
+- `CLOUDINARY_CLOUD_NAME`
+- `CLOUDINARY_API_KEY`
+- `CLOUDINARY_API_SECRET`
+
+`PORT` is read automatically when provided by the hosting platform.
+
+### Images
+When the three Cloudinary variables are configured, uploaded pet images are stored permanently in Cloudinary and the HTTPS URL is saved in MySQL. Render restarts/redeploys therefore do not remove uploaded images. Without Cloudinary variables, local development falls back to `./uploads` only.
+
+### Demo access
+- HR/recruiter: use **訪客體驗登入**. TeaCat creates the guest account and demo 茶茶 data automatically when needed.
+- Owner/test account: **a / a** is automatically created on a fresh database and is preserved for personal testing.
+
+### Health check
+`GET /health` returns a small JSON response and can be used as the hosting health-check path.
+
+### Render example
+- Build command: `./mvnw clean package -DskipTests`
+- Start command: `java -jar target/teacat-0.0.1-SNAPSHOT.jar`
+- Health check path: `/health`
+
+Do not commit real database passwords, JWT secrets, or Cloudinary secrets to Git.
