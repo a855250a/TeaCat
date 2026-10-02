@@ -1,38 +1,138 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PetHealthCloud</title>
+
+    <title>TeaCat｜登入</title>
 
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
-    <div class="container">
 
-    <h1>PetHealthCloud</h1>
-    <p>Pet Health Management System</p>
+<body class="login-page">
 
-    <div class="card">
-        <h2>會員登入</h2>
-        <input id="email" type="email" placeholder="電子郵件">
-        <input id="password" type="password" placeholder="密碼">
-        <button id="loginButton">登入</button>
-    </div>
+    <main class="login-container">
 
-    <div class="guest-login">
-    <p>或</p>
+        <!-- =========================
+             TeaCat Brand
+        ========================== -->
+        <section class="login-brand">
 
-    <button id="guestLoginButton" type="button">
-        🐾 訪客體驗登入
-    </button>
+            <div class="login-logo">
+                🐾
+            </div>
 
-    <p class="guest-hint">
-        無需註冊，直接體驗 PetHealthCloud
-    </p>
-    </div>
-        
-    </div>
-    <script src="script.js?v=0.6"></script>
+            <h1>TeaCat</h1>
+
+            <p>
+                Pet Health, Made Simple.
+            </p>
+
+        </section>
+
+
+        <!-- =========================
+             Login Card
+        ========================== -->
+        <section class="login-card">
+
+            <div class="login-card-header">
+
+                <h2>歡迎回來</h2>
+
+                <p>
+                    登入 TeaCat 管理毛孩的健康紀錄
+                </p>
+
+            </div>
+
+
+            <div class="login-form">
+
+                <label for="email">
+                    帳號
+                </label>
+
+                <input
+                    id="email"
+                    type="text"
+                    placeholder="請輸入帳號"
+                    autocomplete="username"
+                >
+
+
+                <label for="password">
+                    密碼
+                </label>
+
+                <input
+                    id="password"
+                    type="password"
+                    placeholder="請輸入密碼"
+                    autocomplete="current-password"
+                >
+
+
+                <button
+                    id="loginButton"
+                    type="button"
+                    class="login-primary-button"
+                >
+                    登入
+                </button>
+
+            </div>
+
+
+            <!-- =========================
+                 Divider
+            ========================== -->
+            <div class="login-divider">
+
+                <span>或</span>
+
+            </div>
+
+
+            <!-- =========================
+                 Guest Login
+            ========================== -->
+            <div class="guest-login">
+
+                <button
+                    id="guestLoginButton"
+                    type="button"
+                    class="guest-login-button"
+                >
+                    🐾 訪客體驗登入
+                </button>
+
+                <p class="guest-hint">
+                    無需帳號密碼，立即體驗 TeaCat
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             Footer
+        ========================== -->
+        <footer class="login-footer">
+
+            <span>TeaCat</span>
+            <span>•</span>
+            <span>Pet Health Management</span>
+
+        </footer>
+
+    </main>
+
+
+    <script src="script.js?v=0.7.2"></script>
+
 </body>
+
 </html>

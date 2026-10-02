@@ -37,8 +37,11 @@ if (isProtectedPage) {
     if (!token || token === "null" || token === "undefined") {
 
         localStorage.removeItem("token");
+        localStorage.removeItem("loginUser");
+        localStorage.removeItem("loginMode");
 
-        window.location.replace("/login.html");
+        window.location.href =
+        "/login.html";
     }
 }
 
@@ -119,7 +122,17 @@ if (loginButton) {
                 "token",
                 data.token
             );
+            
+            localStorage.setItem(
+            "loginUser",
+            data.email
+            );
 
+            localStorage.setItem(
+            "loginMode",
+            "user"
+            );
+            
             window.location.href =
                 "/dashboard.html";
 
@@ -154,89 +167,65 @@ if (loginButton) {
 const guestLoginButton =
     document.getElementById("guestLoginButton");
 
-
 if (guestLoginButton) {
 
     guestLoginButton.addEventListener(
         "click",
-        function () {
+        async function () {
 
             guestLoginButton.disabled = true;
-            guestLoginButton.textContent =
-                "登入中...";
+            guestLoginButton.textContent = "登入中...";
 
+            try {
 
-            fetch("/login", {
+                const response = await fetch(
+                    "/guest-login",
+                    {
+                        method: "POST"
+                    }
+                );
 
-                method: "POST",
+                const data = await response.json();
 
-                headers: {
-                    "Content-Type":
-                        "application/json"
-                },
-
-                body: JSON.stringify({
-                    email:
-                        "demo@pethealthcloud.com",
-                    password:
-                        "Demo123456"
-                })
-
-            })
-
-            .then(async function (response) {
-
-                const data =
-                    await response.json();
-
-                if (
-                    !response.ok ||
-                    !data.token
-                ) {
-
+                if (!response.ok || !data.token) {
                     throw new Error(
-                        "訪客登入失敗"
+                        data.message || "訪客登入失敗"
                     );
                 }
 
-                return data;
-            })
-
-            .then(function (data) {
+                localStorage.setItem(
+                "token",
+                data.token
+                );
 
                 localStorage.setItem(
-                    "token",
-                    data.token
+                "loginUser",
+                data.email
+                );
+
+                localStorage.setItem(
+                "loginMode",
+                "guest"
                 );
 
                 window.location.href =
-                    "/dashboard.html";
+                "/dashboard.html";
 
-            })
-
-            .catch(function (error) {
+            } catch (error) {
 
                 console.error(
                     "Guest Login Error:",
                     error
                 );
 
-                localStorage.removeItem(
-                    "token"
-                );
+                localStorage.removeItem("token");
 
-                alert(
-                    "訪客登入暫時無法使用"
-                );
+                alert("訪客登入暫時無法使用");
 
-                guestLoginButton.disabled =
-                    false;
-
+                guestLoginButton.disabled = false;
                 guestLoginButton.textContent =
                     "🐾 訪客體驗登入";
-
-            });
-
+            }
         }
     );
 }
@@ -1132,4 +1121,35 @@ if (addPetButton) {
 
         }
     );
+}
+
+// =========================
+// Login Identity
+// =========================
+
+const loginIdentityText =
+    document.getElementById("loginIdentityText");
+
+const loginIdentityIcon =
+    document.getElementById("loginIdentityIcon");
+
+if (loginIdentityText && loginIdentityIcon) {
+
+    const loginMode =
+        localStorage.getItem("loginMode");
+
+    const loginUser =
+        localStorage.getItem("loginUser");
+
+    if (loginMode === "guest") {
+
+        loginIdentityIcon.textContent = "🐾";
+        loginIdentityText.textContent = "訪客模式";
+
+    } else {
+
+        loginIdentityIcon.textContent = "👤";
+        loginIdentityText.textContent =
+            loginUser || "使用者";
+    }
 }
